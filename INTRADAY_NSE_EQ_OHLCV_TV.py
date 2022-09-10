@@ -27,6 +27,8 @@ class Data_Intraday_EQ:
         self.df_INTRADAY_NSE_EQ_OHLC_TV =""
         self.Data_One_Symbol =""
 
+        self.Creating_a_Database()
+
         # self.Creating_a_Database()
     #
     # def INIT ( self ) :
@@ -43,32 +45,26 @@ class Data_Intraday_EQ:
             print ( "Failed to connect Mysql with mentioned credential : " + E1 )
             return False
 
-    def PrepareMysql(self):
+    def Intrady_Data_Universal(self):
 
         query="SELECT * FROM pricedata.bhavcopyprice  order  by Timestamp ASC   ;"
 
         self.df_INTRADAY_NSE_EQ_OHLC_TV=pd.read_sql(query,con=self.db_connection)
 
     #     Request One Symbol Data from DB
-    def Intrady_Data_OneSymbol(self,symbol):
+    def Intrady_Data_OneSymbol(self, symbol):
+
 
         query="SELECT * FROM pricedata.bhavcopyprice  where Symbol = '"+symbol+"' order  by Timestamp ASC   ;"
 
-        self.Data_One_Symbol=pd.read_sql(query,con=self.db_connection)
+        self.Data_One_Symbsol=pd.read_sql(query,con=self.db_connection)
 
     def _main ( self ) :
         if(self.Creating_a_Database()):
             self.PrepareMysql()
             print("passed")
 
-
-
-
-
-
-
-
-obj =Data_Intraday_EQ()
-obj._main()
-d=obj.df_INTRADAY_NSE_EQ_OHLC_TV
-print(d.info())
+# obj =Data_Intraday_EQ()
+# obj._main()
+# d=obj.df_INTRADAY_NSE_EQ_OHLC_TV
+# print(d.info())
