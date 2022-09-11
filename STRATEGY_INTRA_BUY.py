@@ -21,17 +21,38 @@ class STRATEGY_INTRA_BUY:
         self.df_distinct_Symbol=self.df_OHLCV_Local["Symbol"].unique()
         return list(self.df_distinct_Symbol)
 
-    def Scan_Uptrend(self, df_input ,period):
+    def Scan_Uptrend(self, df_input ,period = 50):
         """ Copy Data in Dataframe """
-        df_temp =df_input
-        df_temp_2 = pd.DataFrame()
+        df_temp =df_input[::-1].iloc[0:period][::-1]
+        closingPrice_Prev = 0.0
+        closingPrice_Current =0.0
 
-        for OnedayData in (df_temp.iterrows()):
-            sym = OnedayData[ConfigVar.Symbol] + "_"+OnedayData[ConfigVar.TIMESTAMP]
-            closeprice =OnedayData[ConfigVar.CLOSE]
-            print(sym,closeprice)
+        list_storeAction =[]
 
-        # print("pass")
+        for OnedayData in (df_temp.iterrows( )) :
+            # sym = str(OnedayData [ ConfigVar.Symbol ]) + "_" + str(OnedayData [ ConfigVar.TIMESTAMP ])
+            closeprice = float(OnedayData[1] [ ConfigVar.CLOSE ])
+
+            closingPrice_Current = closeprice
+
+            if closingPrice_Prev != 0:
+                if closingPrice_Current > closingPrice_Prev:
+                    list_storeAction.append ( "UP" )
+                elif closingPrice_Current < closingPrice_Prev:
+                    list_storeAction.append ( "DOWN" )
+                else:
+                    list_storeAction.append ( "Const" )
+            else:
+                list_storeAction.append ( "-" )
+
+            # Update Previous Closing Price Variable
+            closingPrice_Prev = closeprice
+
+            # print ( sym , closeprice )
+        df_temp["UP_DOWN"] =list_storeAction
+        print("pass")
+
+
 
 
 
@@ -57,7 +78,7 @@ if __name__ == '__main__':
             if df_1.count != 0:
                 """ Data is Ready"""
                 df_1.dropna ( inplace = True )
-                SIB.Scan_Uptrend(df_1,5)
+                SIB.Scan_Uptrend(df_1)
 
                 print(1)
 

@@ -1,0 +1,13 @@
+
+# ID, Symbol, TIMESTAMP, OPEN, HIGH, LOW, CLOSE, TOTTRDQTY, TOTTRDVAL, TOTALTRADES
+class BhavCopy_EQ :
+    Symbol = "Symbol"
+    TIMESTAMP = "TIMESTAMP"
+    ID = "ID"
+    OPEN = "OPEN"
+    HIGH = "HIGH"
+    CLOSE = "CLOSE"
+    TOTTRDQTY = "TOTTRDQTY"
+    TOTTRDVL = "TOTTRDVL"
+    LOW = "LOW"
+    TOTALTRADES = "TOTALTRADES"
