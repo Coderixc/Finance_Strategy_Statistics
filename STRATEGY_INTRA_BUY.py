@@ -160,7 +160,6 @@ class STRATEGY_INTRA_BUY:
             return pd.DataFrame()
             pass
 
-
     def Find_Long_Side_Trades( self,df_Input_With_Col_UPDOWN_CHANGE,period=10 ):
         res = "XX"
         try:
@@ -203,6 +202,53 @@ class STRATEGY_INTRA_BUY:
             res = "failed"
             return res
 
+    def SMA_alpha_GreaterThan_beta_And_Less_Than_Theta( self,df_SMA_alpha_beta_theta ,min_period =14):
+        """
+        alpha = 14 Days SMA
+        beta = 50 Day SMA
+        Theta = 200 Day SMA
+
+        logic : alpha > beta  && alpha < Theta   --> Possibility to break Theta in coming Next
+
+        Conclusion: Will consider Bull
+        """
+        try:
+
+            df_temp= df_SMA_alpha_beta_theta
+            List_Result = [ ]
+
+            counter = 0
+            for row in df_temp.iterrows():
+
+                alpha  =row[1]["SMA_14"]
+                beta = row[1]["SMA_50"]
+                theta = row[1]["SMA_200"]
+
+                if counter >= min_period:
+
+                    if (alpha >=beta  ) and (alpha < theta):
+                        List_Result.append("CROSSED 1 BUT NOT 2")
+                    elif (alpha >=beta  ) and (alpha >= theta):
+                        List_Result.append("CROSSED 2")
+                    elif (alpha < beta  ) and (alpha < theta):
+                        List_Result.append("WILL CROSS 1")
+                    else:
+                        List_Result.append(0)
+                else:
+                    List_Result.append( 0 )
+
+                counter = counter +1
+
+            df_temp["ABT_cases"] = List_Result
+
+            return df_temp
+
+            pass
+        except:
+            print("Failed To calculate SMA on alpha, Beta , Theta")
+
+
+
 
 if __name__ == '__main__':
 
@@ -235,11 +281,14 @@ if __name__ == '__main__':
 
                 """ Calculating MOVING AVERAGE ON DIFF PERIOD """
 
-                df_marked_U_D_C["SMA_14"]=  df_marked_U_D_C[ConfigVariable.BhavCopy_EQ.CLOSE].rolling(14).mean()
-                df_marked_U_D_C["SMA_21"]=  df_marked_U_D_C[ConfigVariable.BhavCopy_EQ.CLOSE].rolling(21).mean()
-                df_marked_U_D_C["SMA_50"]=  df_marked_U_D_C[ConfigVariable.BhavCopy_EQ.CLOSE].rolling(50).mean()
-                df_marked_U_D_C["SMA_200"]=  df_marked_U_D_C[ConfigVariable.BhavCopy_EQ.CLOSE].rolling(200).mean()
+                df_marked_U_D_C["SMA_14"]=  df_marked_U_D_C[ConfigVariable.BhavCopy_EQ.CLOSE].rolling(14,min_periods=14).mean()
+                df_marked_U_D_C["SMA_21"]=  df_marked_U_D_C[ConfigVariable.BhavCopy_EQ.CLOSE].rolling(21,min_periods=21).mean()
+                df_marked_U_D_C["SMA_50"]=  df_marked_U_D_C[ConfigVariable.BhavCopy_EQ.CLOSE].rolling(50,min_periods=50).mean()
+                df_marked_U_D_C["SMA_200"]=  df_marked_U_D_C[ConfigVariable.BhavCopy_EQ.CLOSE].rolling(200,min_periods=200).mean()
 
+
+                """ CASE 1: ABT testing  """
+                df_ABT = SIB.SMA_alpha_GreaterThan_beta_And_Less_Than_Theta(df_marked_U_D_C)
 
                 """Calculate Trend  on specific Period """
                 # df_Apply_trend = SIB.Apply_Trend_On_Period(df_marked_U_D_C,"UP",10)
