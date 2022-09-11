@@ -25,6 +25,9 @@ import pandas as pd
 
 from ConfigVariable import BhavCopy_EQ as ConfigVar
 
+
+import warnings
+warnings.simplefilter(action='ignore', category=UserWarning)
 #
 # obj = OHLCV.Data_Intraday_EQ()
 # obj._main()
@@ -158,10 +161,10 @@ class STRATEGY_INTRA_BUY:
             pass
 
 
-    def Find_Long_Side_Trades( self,df_Input_With_Col_UPDOWN_CHANGE,Perid=5 ):
+    def Find_Long_Side_Trades( self,df_Input_With_Col_UPDOWN_CHANGE,period=10 ):
         res = "XX"
         try:
-            dt_temp = df_Input_With_Col_UPDOWN_CHANGE[::-1].iloc[0:5][::-1]
+            dt_temp = df_Input_With_Col_UPDOWN_CHANGE[::-1].iloc[0:period]
             res = "Bull"
             for row in dt_temp.iterrows():
                 trend = row[1]["UP_DOWN"]
@@ -170,6 +173,7 @@ class STRATEGY_INTRA_BUY:
                     res = "Bull"
                 else:
                     res ="Failed"
+                    break
 
             return res
 
@@ -208,17 +212,16 @@ if __name__ == '__main__':
 
 
                 """Calculate Trend  on specific Period """
-                df_Apply_trend = SIB.Apply_Trend_On_Period(df_marked_U_D_C,"UP",10)
+                # df_Apply_trend = SIB.Apply_Trend_On_Period(df_marked_U_D_C,"UP",10)
 
                 """Calculate Probability on trend  in a given Period """
                 # df_Prob_on_BUY_OR_SELL =SIB.Calulate_Probabilty_On_Trend(df_marked_U_D_C,20)
                 """ Calcuate BULL"""
-                res = SIB.Find_Long_Side_Trades(df_marked_U_D_C,3)
+                res = SIB.Find_Long_Side_Trades(df_marked_U_D_C,5)
                 if res == "Bull":
-                    List_Symbol.append(symbol  +"_"+res)
-
-
-
+                    List_Bull_Side.append(str(symbol)  +"_"+ str(res))
+                    print(str(symbol)  +"_"+ str(res))
+                # print( symbol )
 
 
             else:
