@@ -94,9 +94,7 @@ class STRATEGY_INTRA_BUY:
         finally :
             return df_temp
 
-
     def Apply_Trend_On_Period( self,df_Input_With_Col_UP_DOWN_CHNAGE,trend, period=5 ):
-
 
         try:
             dt_temp = df_Input_With_Col_UP_DOWN_CHNAGE[ : :-1 ].iloc[ 0 :period ][::-1]
@@ -111,14 +109,74 @@ class STRATEGY_INTRA_BUY:
                     list_Result.append(trend +"_F")
 
             dt_temp["Check_Trend_"+trend] = list_Result
-
             return dt_temp
 
         except:
             print("Failed to Apply Trend on Apply_Trend_On_Period()")
-
             return pd.DataFrame()
 
+    def _Calculate_Conclusion( self,Count_UpSide,Count_DownSide ):
+        result = ""
+        try:
+            if Count_UpSide > Count_DownSide:
+                result ="BUY_SIDE"
+            elif Count_UpSide < Count_DownSide:
+                result= "SELL_SIDE"
+            else:
+                result ="BothSide"
+
+            return result
+
+
+        except:
+            print("failed to conclude Conclusion")
+
+    def Calulate_Probabilty_On_Trend( self,df_Input_With_Col_UPDOWN_CHANGE ,period):
+        try:
+            dt_temp = df_Input_With_Col_UPDOWN_CHANGE[ : :-1 ].iloc[0:period]
+            length =len(dt_temp)
+            count_up = 0
+            count_down =0
+
+            for row in dt_temp.iterrows():
+
+                change = row[1]["CHNAGE_%"]
+                if change  >=0:
+                    count_up = count_up +1
+                elif change <0:
+                    count_down =count_down +1
+            """ Conclusion """
+            res = self._Calculate_Conclusion(count_up,count_down)
+
+            dt_temp["Prob"] = res
+
+            return dt_temp
+
+        except:
+            print("Failed to Calculate_Probability_On_trend()")
+            return pd.DataFrame()
+            pass
+
+
+    def Find_Long_Side_Trades( self,df_Input_With_Col_UPDOWN_CHANGE,Perid=5 ):
+        res = "XX"
+        try:
+            dt_temp = df_Input_With_Col_UPDOWN_CHANGE[::-1].iloc[0:5][::-1]
+            res = "Bull"
+            for row in dt_temp.iterrows():
+                trend = row[1]["UP_DOWN"]
+                Curr_Trend= trend
+                if trend== "UP":
+                    res = "Bull"
+                else:
+                    res ="Failed"
+
+            return res
+
+        except:
+            print("Failed To calcuate Bull")
+            res = "failed"
+            return res
 
 
 if __name__ == '__main__':
@@ -134,8 +192,11 @@ if __name__ == '__main__':
         d=SIB.Distinct_EQ_Symbol()
         df_1 = pd.DataFrame()
 
+        List_Bull_Side = []
+        List_Symbol =[]
+
         for symbol in d :
-            print ( "Scanning Symbol in df " + symbol )
+            # print ( "Scanning Symbol in df " + symbol )
             """ Extract data of specific Symbol passed  """
             filter_1_Search_Symbol = df_OHLC_global [ ConfigVariable.BhavCopy_EQ.Symbol ] == symbol
             df_1 = df_OHLC_global.where ( filter_1_Search_Symbol , inplace = False )
@@ -145,8 +206,17 @@ if __name__ == '__main__':
                 df_1.dropna ( inplace = True )
                 df_marked_U_D_C=  SIB.Scan_Marking_UP_DOWN_CONST(df_1,200)
 
+
                 """Calculate Trend  on specific Period """
                 df_Apply_trend = SIB.Apply_Trend_On_Period(df_marked_U_D_C,"UP",10)
+
+                """Calculate Probability on trend  in a given Period """
+                # df_Prob_on_BUY_OR_SELL =SIB.Calulate_Probabilty_On_Trend(df_marked_U_D_C,20)
+                """ Calcuate BULL"""
+                res = SIB.Find_Long_Side_Trades(df_marked_U_D_C,3)
+                if res == "Bull":
+                    List_Symbol.append(symbol  +"_"+res)
+
 
 
 
@@ -154,5 +224,5 @@ if __name__ == '__main__':
             else:
                 print("No Data is Present for Symbol " + symbol)
 
-
+        print( 11 )
 #
