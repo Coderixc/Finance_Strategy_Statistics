@@ -182,6 +182,27 @@ class STRATEGY_INTRA_BUY:
             res = "failed"
             return res
 
+    def Find_Short_Side_Trades( self,df_Input_With_Col_UPDOWN_CHANGE,period=10 ):
+        res = "XX"
+        try:
+            dt_temp = df_Input_With_Col_UPDOWN_CHANGE[::-1].iloc[0:period]
+            res = "Bull"
+            for row in dt_temp.iterrows():
+                trend = row[1]["UP_DOWN"]
+                Curr_Trend= trend
+                if trend == "DOWN":
+                    res = "Bear"
+                else:
+                    res ="Failed"
+                    break
+
+            return res
+
+        except:
+            print("Failed To calculate Bear")
+            res = "failed"
+            return res
+
 
 if __name__ == '__main__':
 
@@ -198,6 +219,7 @@ if __name__ == '__main__':
 
         List_Bull_Side = []
         List_Symbol =[]
+        List_Bear_Side = []
 
         for symbol in d :
             # print ( "Scanning Symbol in df " + symbol )
@@ -208,7 +230,15 @@ if __name__ == '__main__':
             if df_1.count != 0:
                 """ Data is Ready"""
                 df_1.dropna ( inplace = True )
-                df_marked_U_D_C=  SIB.Scan_Marking_UP_DOWN_CONST(df_1,200)
+                df_marked_U_D_C=  SIB.Scan_Marking_UP_DOWN_CONST(df_1,350)
+
+
+                """ Calculating MOVING AVERAGE ON DIFF PERIOD """
+
+                df_marked_U_D_C["SMA_14"]=  df_marked_U_D_C[ConfigVariable.BhavCopy_EQ.CLOSE].rolling(14).mean()
+                df_marked_U_D_C["SMA_21"]=  df_marked_U_D_C[ConfigVariable.BhavCopy_EQ.CLOSE].rolling(21).mean()
+                df_marked_U_D_C["SMA_50"]=  df_marked_U_D_C[ConfigVariable.BhavCopy_EQ.CLOSE].rolling(50).mean()
+                df_marked_U_D_C["SMA_200"]=  df_marked_U_D_C[ConfigVariable.BhavCopy_EQ.CLOSE].rolling(200).mean()
 
 
                 """Calculate Trend  on specific Period """
@@ -220,6 +250,14 @@ if __name__ == '__main__':
                 res = SIB.Find_Long_Side_Trades(df_marked_U_D_C,5)
                 if res == "Bull":
                     List_Bull_Side.append(str(symbol)  +"_"+ str(res))
+                    # print(str(symbol)  +"_"+ str(res))
+                # print( symbol )
+
+
+                """ Calcuate BULL"""
+                res = SIB.Find_Short_Side_Trades(df_marked_U_D_C,3)
+                if res == "Bear":
+                    List_Bear_Side.append(str(symbol)  +"_"+ str(res))
                     print(str(symbol)  +"_"+ str(res))
                 # print( symbol )
 
