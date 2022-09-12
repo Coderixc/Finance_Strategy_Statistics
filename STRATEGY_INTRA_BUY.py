@@ -39,11 +39,9 @@ class STRATEGY_INTRA_BUY:
     def __init__(self,df):
         self.df_OHLCV_Local=df
         self.df_distinct_Symbol=pd.DataFrame()
-
     def Distinct_EQ_Symbol(self):
         self.df_distinct_Symbol=self.df_OHLCV_Local["Symbol"].unique()
         return list(self.df_distinct_Symbol)
-
     def Calculate_Percentage ( self , input1 , input2_base ) :
         try :
             res = (input1 - input2_base) / input2_base * 100
@@ -51,6 +49,15 @@ class STRATEGY_INTRA_BUY:
         except :
             res = 0.0
             return res
+
+    def Calculate_Percentage_SMA( self , input1 , input2_base ) :
+        try :
+            res = input1 / input2_base * 100
+            return round(res,2)
+        except :
+            res = 0.0
+            return res
+
 
     def Scan_Marking_UP_DOWN_CONST( self , df_input , period = 50 ) :
         """ Copy Data in Dataframe """
@@ -96,7 +103,6 @@ class STRATEGY_INTRA_BUY:
 
         finally :
             return df_temp
-
     def Apply_Trend_On_Period( self,df_Input_With_Col_UP_DOWN_CHNAGE,trend, period=5 ):
 
         try:
@@ -117,7 +123,6 @@ class STRATEGY_INTRA_BUY:
         except:
             print("Failed to Apply Trend on Apply_Trend_On_Period()")
             return pd.DataFrame()
-
     def _Calculate_Conclusion( self,Count_UpSide,Count_DownSide ):
         result = ""
         try:
@@ -133,7 +138,6 @@ class STRATEGY_INTRA_BUY:
 
         except:
             print("failed to conclude Conclusion")
-
     def Calulate_Probabilty_On_Trend( self,df_Input_With_Col_UPDOWN_CHANGE ,period):
         try:
             dt_temp = df_Input_With_Col_UPDOWN_CHANGE[ : :-1 ].iloc[0:period]
@@ -159,7 +163,6 @@ class STRATEGY_INTRA_BUY:
             print("Failed to Calculate_Probability_On_trend()")
             return pd.DataFrame()
             pass
-
     def Find_Long_Side_Trades( self,df_Input_With_Col_UPDOWN_CHANGE,period=10 ):
         res = "XX"
         try:
@@ -180,7 +183,6 @@ class STRATEGY_INTRA_BUY:
             print("Failed To calcuate Bull")
             res = "failed"
             return res
-
     def Find_Short_Side_Trades( self,df_Input_With_Col_UPDOWN_CHANGE,period=10 ):
         res = "XX"
         try:
@@ -201,7 +203,6 @@ class STRATEGY_INTRA_BUY:
             print("Failed To calculate Bear")
             res = "failed"
             return res
-
     def SMA_alpha_GreaterThan_beta_And_Less_Than_Theta( self,df_SMA_alpha_beta_theta ,min_period =14):
         """
         alpha = 14 Days SMA
@@ -227,11 +228,11 @@ class STRATEGY_INTRA_BUY:
                 if counter >= min_period:
 
                     if (alpha >=beta  ) and (alpha < theta):
-                        List_Result.append("CROSSED 1 BUT NOT 2")
+                        List_Result.append("CROSSED_1_BUT_NOT_2")
                     elif (alpha >=beta  ) and (alpha >= theta):
-                        List_Result.append("CROSSED 2")
+                        List_Result.append("CROSSED_2")
                     elif (alpha < beta  ) and (alpha < theta):
-                        List_Result.append("WILL CROSS 1")
+                        List_Result.append("WILL_CROSS_1")
                     else:
                         List_Result.append(0)
                 else:
@@ -246,6 +247,30 @@ class STRATEGY_INTRA_BUY:
             pass
         except:
             print("Failed To calculate SMA on alpha, Beta , Theta")
+
+    def  Apply_SMA_on_Period( self,df_SMA_alpha_beta_theta, trend,period = 22,delta_allowed = 50 ):
+        try:
+            dt_temp = df_SMA_alpha_beta_theta[ : :-1 ].iloc[ 0 :period ][::-1]
+
+            list_Result =[]
+            count_trend =0
+
+            for row in dt_temp.iterrows():
+                _trend = row[1]["ABT_cases" ]
+                if _trend == trend:
+                    count_trend =count_trend+1
+
+
+            """ 40 /60  """
+            res = self.Calculate_Percentage_SMA(count_trend, period)
+            if res >= delta_allowed :
+                return "P"
+            else :
+                return "F"
+
+        except:
+            print("Failed to Apply Trend on Apply_SMA_On_Period()")
+            return pd.DataFrame()
 
 
 
@@ -267,6 +292,8 @@ if __name__ == '__main__':
         List_Symbol =[]
         List_Bear_Side = []
 
+        List_SMA_BELOW_1=[]
+
         for symbol in d :
             # print ( "Scanning Symbol in df " + symbol )
             """ Extract data of specific Symbol passed  """
@@ -281,10 +308,10 @@ if __name__ == '__main__':
 
                 """ Calculating MOVING AVERAGE ON DIFF PERIOD """
 
-                df_marked_U_D_C["SMA_14"]=  df_marked_U_D_C[ConfigVariable.BhavCopy_EQ.CLOSE].rolling(14,min_periods=14).mean()
-                df_marked_U_D_C["SMA_21"]=  df_marked_U_D_C[ConfigVariable.BhavCopy_EQ.CLOSE].rolling(21,min_periods=21).mean()
-                df_marked_U_D_C["SMA_50"]=  df_marked_U_D_C[ConfigVariable.BhavCopy_EQ.CLOSE].rolling(50,min_periods=50).mean()
-                df_marked_U_D_C["SMA_200"]=  df_marked_U_D_C[ConfigVariable.BhavCopy_EQ.CLOSE].rolling(200,min_periods=200).mean()
+                df_marked_U_D_C["SMA_14"]=  df_marked_U_D_C[ConfigVariable.BhavCopy_EQ.CLOSE].rolling(14,min_periods=1).mean()
+                df_marked_U_D_C["SMA_21"]=  df_marked_U_D_C[ConfigVariable.BhavCopy_EQ.CLOSE].rolling(21,min_periods=1).mean()
+                df_marked_U_D_C["SMA_50"]=  df_marked_U_D_C[ConfigVariable.BhavCopy_EQ.CLOSE].rolling(50,min_periods=1).mean()
+                df_marked_U_D_C["SMA_200"]=  df_marked_U_D_C[ConfigVariable.BhavCopy_EQ.CLOSE].rolling(200,min_periods=1).mean()
 
 
                 """ CASE 1: ABT testing  """
@@ -296,19 +323,31 @@ if __name__ == '__main__':
                 """Calculate Probability on trend  in a given Period """
                 # df_Prob_on_BUY_OR_SELL =SIB.Calulate_Probabilty_On_Trend(df_marked_U_D_C,20)
                 """ Calcuate BULL"""
-                res = SIB.Find_Long_Side_Trades(df_marked_U_D_C,5)
-                if res == "Bull":
-                    List_Bull_Side.append(str(symbol)  +"_"+ str(res))
+                # res = SIB.Find_Long_Side_Trades(df_marked_U_D_C,3)
+                # if res == "Bull":
+                #     List_Bull_Side.append(str(symbol)  +"_"+ str(res))
+                #     print(str(symbol)  +"_"+ str(res))
+                # print( symbol )
+
+
+                """ Calcuate Bear"""
+                # res = SIB.Find_Short_Side_Trades(df_marked_U_D_C,3)
+                # if res == "Bear":
+                #     List_Bear_Side.append(str(symbol)  +"_"+ str(res))
                     # print(str(symbol)  +"_"+ str(res))
                 # print( symbol )
 
+                if symbol =="TATASTEEL":
+                    print("Checking")
 
-                """ Calcuate BULL"""
-                res = SIB.Find_Short_Side_Trades(df_marked_U_D_C,3)
-                if res == "Bear":
-                    List_Bear_Side.append(str(symbol)  +"_"+ str(res))
-                    print(str(symbol)  +"_"+ str(res))
-                # print( symbol )
+                """Calculate BULL USING SMA CONDITION"""
+                res_sma =SIB.Apply_SMA_on_Period(df_marked_U_D_C,"CROSSED_1_BUT_NOT_2",70,90)
+                if res_sma == "P" :
+                    List_SMA_BELOW_1.append(str(symbol) + "_" +res_sma )
+                    print(str(symbol) + "_" +res_sma)
+                    # "SMA_"+"Perd_"+period+"Dlt_"+delta_allowed+"*P"
+
+
 
 
             else:
