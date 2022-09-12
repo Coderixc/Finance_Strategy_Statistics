@@ -34,7 +34,7 @@ warnings.simplefilter(action='ignore', category=UserWarning)
 # d= obj.df_INTRADAY_NSE_EQ_OHLC_TV
 # print(d)
 
-class STRATEGY_INTRA_BUY:
+class STRATEGY_INTRA_BUY :
 
     def __init__(self,df):
         self.df_OHLCV_Local=df
@@ -49,7 +49,6 @@ class STRATEGY_INTRA_BUY:
         except :
             res = 0.0
             return res
-
     def Calculate_Percentage_SMA( self , input1 , input2_base ) :
         try :
             res = input1 / input2_base * 100
@@ -57,8 +56,6 @@ class STRATEGY_INTRA_BUY:
         except :
             res = 0.0
             return res
-
-
     def Scan_Marking_UP_DOWN_CONST( self , df_input , period = 50 ) :
         """ Copy Data in Dataframe """
         df_temp = df_input[ : :-1 ].iloc[ 0 :period ][ : :-1 ]
@@ -247,7 +244,6 @@ class STRATEGY_INTRA_BUY:
             pass
         except:
             print("Failed To calculate SMA on alpha, Beta , Theta")
-
     def  Apply_SMA_on_Period( self,df_SMA_alpha_beta_theta, trend,period = 22,delta_allowed = 50 ):
         try:
             dt_temp = df_SMA_alpha_beta_theta[ : :-1 ].iloc[ 0 :period ][::-1]
@@ -271,8 +267,6 @@ class STRATEGY_INTRA_BUY:
         except:
             print("Failed to Apply Trend on Apply_SMA_On_Period()")
             return pd.DataFrame()
-
-
 
 
 if __name__ == '__main__':
@@ -323,7 +317,7 @@ if __name__ == '__main__':
                 """Calculate Probability on trend  in a given Period """
                 # df_Prob_on_BUY_OR_SELL =SIB.Calulate_Probabilty_On_Trend(df_marked_U_D_C,20)
                 """ Calcuate BULL"""
-                # res = SIB.Find_Long_Side_Trades(df_marked_U_D_C,3)
+                # res = SIB.Find_Long_Side_Trades(df_marked_U_D_C,6)
                 # if res == "Bull":
                 #     List_Bull_Side.append(str(symbol)  +"_"+ str(res))
                 #     print(str(symbol)  +"_"+ str(res))
@@ -337,15 +331,15 @@ if __name__ == '__main__':
                     # print(str(symbol)  +"_"+ str(res))
                 # print( symbol )
 
-                if symbol =="TATASTEEL":
-                    print("Checking")
+                if symbol == "TITAN":
+                    print("kk")
 
                 """Calculate BULL USING SMA CONDITION"""
-                res_sma =SIB.Apply_SMA_on_Period(df_marked_U_D_C,"CROSSED_1_BUT_NOT_2",70,90)
+                res_sma =SIB.Apply_SMA_on_Period(df_marked_U_D_C,"CROSSED_1_BUT_NOT_2",20,100)
                 if res_sma == "P" :
                     List_SMA_BELOW_1.append(str(symbol) + "_" +res_sma )
                     print(str(symbol) + "_" +res_sma)
-                    # "SMA_"+"Perd_"+period+"Dlt_"+delta_allowed+"*P"
+
 
 
 
