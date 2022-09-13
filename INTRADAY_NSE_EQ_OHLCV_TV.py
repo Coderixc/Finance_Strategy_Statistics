@@ -47,7 +47,7 @@ class Data_Intraday_EQ:
 
     def Intrady_Data_Universal(self):
 
-        query="SELECT * FROM pricedata.bhavcopyprice  order  by Timestamp ASC   ;"
+        query="SELECT * FROM pricedata.bhavcopyprice  order  by Symbol, Timestamp ASC   ;"
 
         self.df_INTRADAY_NSE_EQ_OHLC_TV=pd.read_sql(query,con=self.db_connection)
 

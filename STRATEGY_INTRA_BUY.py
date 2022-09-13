@@ -230,6 +230,8 @@ class STRATEGY_INTRA_BUY :
                         List_Result.append("CROSSED_2")
                     elif (alpha < beta  ) and (alpha < theta):
                         List_Result.append("WILL_CROSS_1")
+                    # elif(alpha >= beta) and (beta < theta):
+                    #     List_Result.append("BETA_WILL_CROSS_2")
                     else:
                         List_Result.append(0)
                 else:
@@ -329,7 +331,7 @@ if __name__ == '__main__':
 
 
                 """Calculate BULL USING SMA CONDITION"""
-                res_sma,df_SMA_Test =SIB.Apply_SMA_on_Period(df_marked_U_D_C,"CROSSED_1_BUT_NOT_2",20,100)
+                res_sma,df_SMA_Test =SIB.Apply_SMA_on_Period(df_marked_U_D_C,"CROSSED_1_BUT_NOT_2",20,70)
                 if res_sma == "P" :
                     List_SMA_BELOW_1.append(str(symbol) + "_" +res_sma )
                     """Recursive Using Func: Calcuate BULL"""
@@ -337,6 +339,16 @@ if __name__ == '__main__':
                     if res == "Bull" :
                         List_Bull_Side.append( str( symbol )+"_"+str( res ) )
                         print( str( symbol )+"_"+str( res ) )
+
+                    """Calculate BULL USING SMA CONDITION  -- > SMA_50_WILL_CROSS_200"""
+                    # res_sma , df_SMA_Test = SIB.Apply_SMA_on_Period( df_marked_U_D_C , "BETA_WILL_CROSS_2" , 20 , 70 )
+                    # if res_sma == "P" :
+                    #     List_SMA_BELOW_1.append( str( symbol )+"_"+res_sma )
+                    #     """Recursive Using Func: Calcuate BULL"""
+                    #     res = SIB.Find_Long_Side_Trades( df_SMA_Test , 4 )
+                    #     if res == "Bull" :
+                    #         List_Bull_Side.append( str( symbol )+"_"+str( res ) )
+                    #         print("SMA_50_WILL_CROSS_200_"+ str( symbol )+"_"+str( res ) )
                     # print( symbol )
 
                     # print(str(symbol) + "_" +res_sma)
@@ -344,9 +356,9 @@ if __name__ == '__main__':
                     # gfg_csv_data = df_marked_U_D_C.to_csv( symbol+'.csv' , index = True )
                     # print( '\nCSV String:\n' , gfg_csv_data )
 
-                # if  symbol == "GSPL":
-                #     print("Scanning Ony :" + symbol)
-                #     gfg_csv_data = df_marked_U_D_C.to_csv( symbol+'.csv' , index = True )
+                if  symbol == "BFUTILITIE":
+                    print("Scanning Ony :" + symbol)
+                    # gfg_csv_data = df_marked_U_D_C.to_csv( symbol+'.csv' , index = True )
                 #     print( '\nCSV String:\n' , gfg_csv_data )
 
 
