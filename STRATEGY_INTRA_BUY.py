@@ -331,7 +331,7 @@ if __name__ == '__main__':
 
 
                 """Calculate BULL USING SMA CONDITION"""
-                res_sma,df_SMA_Test =SIB.Apply_SMA_on_Period(df_marked_U_D_C,"CROSSED_1_BUT_NOT_2",20,70)
+                res_sma,df_SMA_Test =SIB.Apply_SMA_on_Period(df_marked_U_D_C,"CROSSED_1_BUT_NOT_2",25,90)
                 if res_sma == "P" :
                     List_SMA_BELOW_1.append(str(symbol) + "_" +res_sma )
                     """Recursive Using Func: Calcuate BULL"""
@@ -356,7 +356,7 @@ if __name__ == '__main__':
                     # gfg_csv_data = df_marked_U_D_C.to_csv( symbol+'.csv' , index = True )
                     # print( '\nCSV String:\n' , gfg_csv_data )
 
-                if  symbol == "BFUTILITIE":
+                if  symbol == "SCI":
                     print("Scanning Ony :" + symbol)
                     # gfg_csv_data = df_marked_U_D_C.to_csv( symbol+'.csv' , index = True )
                 #     print( '\nCSV String:\n' , gfg_csv_data )
@@ -376,5 +376,5 @@ if __name__ == '__main__':
             else:
                 print("No Data is Present for Symbol " + symbol)
 
-        print( 11 )
+        print( "Scanning Finsished!" )
 #
