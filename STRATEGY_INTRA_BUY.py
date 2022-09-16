@@ -271,6 +271,11 @@ class STRATEGY_INTRA_BUY :
             return pd.DataFrame()
 
 
+""" END OF DEFING CLASS WITH ITS PROPERTIES  AND OBJECT  """
+
+
+
+
 if __name__ == '__main__':
 
     obj=OHLCV.Data_Intraday_EQ()
@@ -331,11 +336,11 @@ if __name__ == '__main__':
 
 
                 """Calculate BULL USING SMA CONDITION"""
-                res_sma,df_SMA_Test =SIB.Apply_SMA_on_Period(df_marked_U_D_C,"WILL_CROSS_1",10,90)
+                res_sma,df_SMA_Test =SIB.Apply_SMA_on_Period(df_marked_U_D_C,"CROSSED_1_BUT_NOT_2",23,90)
                 if res_sma == "P" :
                     List_SMA_BELOW_1.append(str(symbol) + "_" +res_sma )
                     """Recursive Using Func: Calcuate BULL"""
-                    res = SIB.Find_Long_Side_Trades( df_SMA_Test , 2 )
+                    res = SIB.Find_Long_Side_Trades( df_SMA_Test , 4 )
                     if res == "Bull" :
                         List_Bull_Side.append( str( symbol )+"_"+str( res ) )
                         print( str( symbol )+"_"+str( res ) )
