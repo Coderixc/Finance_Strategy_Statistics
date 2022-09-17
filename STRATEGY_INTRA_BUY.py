@@ -42,7 +42,16 @@ class STRATEGY_INTRA_BUY :
     def Distinct_EQ_Symbol(self):
         self.df_distinct_Symbol=self.df_OHLCV_Local["Symbol"].unique()
         return list(self.df_distinct_Symbol)
-    def Calculate_Percentage ( self , input1 , input2_base ) :
+
+    def Calculate_Percentage( self , input1 , totalPeriod ) :
+        try :
+            res = input1 / totalPeriod * 100
+            return round(res,2)
+        except :
+            res = 0.0
+            return res
+
+    def Calculate_Percentage_Day_Change ( self , input1 , input2_base ) :
         try :
             res = (input1 - input2_base) / input2_base * 100
             return round(res,2)
@@ -75,15 +84,15 @@ class STRATEGY_INTRA_BUY :
                 if closingPrice_Prev != 0 :
                     if closingPrice_Current > closingPrice_Prev :
                         list_storeAction.append( "UP" )
-                        list_percentage.append( self.Calculate_Percentage( closingPrice_Current , closingPrice_Prev ) )
+                        list_percentage.append( self.Calculate_Percentage_Day_Change( closingPrice_Current , closingPrice_Prev ) )
 
                     elif closingPrice_Current < closingPrice_Prev :
                         list_storeAction.append( "DOWN" )
-                        list_percentage.append( self.Calculate_Percentage( closingPrice_Current , closingPrice_Prev ) )
+                        list_percentage.append( self.Calculate_Percentage_Day_Change( closingPrice_Current , closingPrice_Prev ) )
 
                     else :
                         list_storeAction.append( "Const" )
-                        list_percentage.append( self.Calculate_Percentage( closingPrice_Current , closingPrice_Prev ) )
+                        list_percentage.append( self.Calculate_Percentage_Day_Change( closingPrice_Current , closingPrice_Prev ) )
 
                 else :
                     list_storeAction.append( "-" )
@@ -160,39 +169,53 @@ class STRATEGY_INTRA_BUY :
             print("Failed to Calculate_Probability_On_trend()")
             return pd.DataFrame()
             pass
-    def Find_Long_Side_Trades( self,df_Input_With_Col_UPDOWN_CHANGE,period=10 ):
+    def Find_Long_Side_Trades( self,df_Input_With_Col_UPDOWN_CHANGE,period=10,Allowed_Period_InPercentage = 50 ):
         res = "XX"
         try:
             dt_temp = df_Input_With_Col_UPDOWN_CHANGE[::-1].iloc[0:period]
             res = "Bull"
+            count_trend_Bull =0
+            count_trend_Bear =0
             for row in dt_temp.iterrows():
                 trend = row[1]["UP_DOWN"]
                 Curr_Trend= trend
                 if trend== "UP":
                     res = "Bull"
+                    count_trend_Bull =  count_trend_Bull +1
                 else:
                     res ="Failed"
-                    break
+                    count_trend_Bear = count_trend_Bear+1
 
-            return res
+            per = self.Calculate_Percentage(count_trend_Bull,period)
+            if per >= Ignore_Period_InPercentageTerm:
+                return res
+            else :
+                res ="Failed"
+                return res
+
+
 
         except:
             print("Failed To calcuate Bull")
             res = "failed"
             return res
-    def Find_Short_Side_Trades( self,df_Input_With_Col_UPDOWN_CHANGE,period=10 ):
+    def Find_Short_Side_Trades( self,df_Input_With_Col_UPDOWN_CHANGE,period=10,Ignore_Period = 50 ):
         res = "XX"
         try:
             dt_temp = df_Input_With_Col_UPDOWN_CHANGE[::-1].iloc[0:period]
             res = "Bull"
+            count_trend_Bull =0
+            count_trend_Bear =0
             for row in dt_temp.iterrows():
                 trend = row[1]["UP_DOWN"]
                 Curr_Trend= trend
                 if trend == "DOWN":
                     res = "Bear"
+                    count_trend_Bear =  count_trend_Bear +1
                 else:
                     res ="Failed"
-                    break
+                    count_trend_Bull =  count_trend_Bull +1
+                    # break
 
             return res
 
@@ -340,7 +363,7 @@ if __name__ == '__main__':
                 if res_sma == "P" :
                     List_SMA_BELOW_1.append(str(symbol) + "_" +res_sma )
                     """Recursive Using Func: Calcuate BULL"""
-                    res = SIB.Find_Long_Side_Trades( df_SMA_Test , 4 )
+                    res = SIB.Find_Long_Side_Trades( df_SMA_Test , 10,70 )
                     if res == "Bull" :
                         List_Bull_Side.append( str( symbol )+"_"+str( res ) )
                         print( str( symbol )+"_"+str( res ) )
