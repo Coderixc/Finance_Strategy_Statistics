@@ -187,7 +187,7 @@ class STRATEGY_INTRA_BUY :
                     count_trend_Bear = count_trend_Bear+1
 
             per = self.Calculate_Percentage(count_trend_Bull,period)
-            if per >= Ignore_Period_InPercentageTerm:
+            if per >= Allowed_Period_InPercentage:
                 return res
             else :
                 res ="Failed"
@@ -363,7 +363,7 @@ if __name__ == '__main__':
                 if res_sma == "P" :
                     List_SMA_BELOW_1.append(str(symbol) + "_" +res_sma )
                     """Recursive Using Func: Calcuate BULL"""
-                    res = SIB.Find_Long_Side_Trades( df_SMA_Test , 10,70 )
+                    res = SIB.Find_Long_Side_Trades( df_SMA_Test , 5,80 )
                     if res == "Bull" :
                         List_Bull_Side.append( str( symbol )+"_"+str( res ) )
                         print( str( symbol )+"_"+str( res ) )
@@ -384,7 +384,7 @@ if __name__ == '__main__':
                     # gfg_csv_data = df_marked_U_D_C.to_csv( symbol+'.csv' , index = True )
                     # print( '\nCSV String:\n' , gfg_csv_data )
 
-                if  symbol == "CMSINFO":
+                if  symbol == "BHEL":
                     print("Scanning Ony :" + symbol)
                     # gfg_csv_data = df_marked_U_D_C.to_csv( symbol+'.csv' , index = True )
                 #     print( '\nCSV String:\n' , gfg_csv_data )
