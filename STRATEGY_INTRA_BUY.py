@@ -312,7 +312,8 @@ if __name__ == '__main__':
         d=SIB.Distinct_EQ_Symbol()
         df_1 = pd.DataFrame()
 
-        List_Bull_Side = []
+        List_Bull_Side_CROSSED_1_BUT_NOT_2 = []
+        List_Bull_Side_WILL_CROSS_1 =[]
         List_Symbol =[]
         List_Bear_Side = []
 
@@ -359,16 +360,34 @@ if __name__ == '__main__':
 
 
                 """Calculate BULL USING SMA CONDITION"""
-                res_sma,df_SMA_Test =SIB.Apply_SMA_on_Period(df_marked_U_D_C,"CROSSED_1_BUT_NOT_2",23,90)
+                res_sma,df_SMA_Test =SIB.Apply_SMA_on_Period(df_marked_U_D_C,"CROSSED_1_BUT_NOT_2",23,70)
                 if res_sma == "P" :
-                    List_SMA_BELOW_1.append(str(symbol) + "_" +res_sma )
+                    # List_SMA_BELOW_1.append(str(symbol) + "_" +res_sma )
                     """Recursive Using Func: Calcuate BULL"""
-                    res = SIB.Find_Long_Side_Trades( df_SMA_Test , 5,80 )
+                    res = SIB.Find_Long_Side_Trades( df_SMA_Test , 5,70 )
                     if res == "Bull" :
-                        List_Bull_Side.append( str( symbol )+"_"+str( res ) )
-                        print( str( symbol )+"_"+str( res ) )
+                        List_Bull_Side_CROSSED_1_BUT_NOT_2.append( str( symbol )+"_"+str( res ) )
 
-                    """Calculate BULL USING SMA CONDITION  -- > SMA_50_WILL_CROSS_200"""
+
+
+                res_sma1,df_SMA_Test1 =SIB.Apply_SMA_on_Period(df_marked_U_D_C,"WILL_CROSS_1",23,70)
+                if res_sma1 == "P" :
+                    # List_SMA_BELOW_1.append( str( symbol )+"_"+res_sma )
+                    """Recursive Using Func: Calcuate BULL"""
+                    res1 = SIB.Find_Long_Side_Trades( df_SMA_Test1 , 5 , 70 )
+                    if res1 == "Bull" :
+                        List_Bull_Side_WILL_CROSS_1.append( str( symbol )+"_"+str( res1 ) )
+
+
+
+
+
+
+
+
+                        # print( str( symbol )+"_"+str( res ) )
+
+                    # """Calculate BULL USING SMA CONDITION  -- > SMA_50_WILL_CROSS_200"""
                     # res_sma , df_SMA_Test = SIB.Apply_SMA_on_Period( df_marked_U_D_C , "BETA_WILL_CROSS_2" , 20 , 70 )
                     # if res_sma == "P" :
                     #     List_SMA_BELOW_1.append( str( symbol )+"_"+res_sma )
@@ -384,13 +403,13 @@ if __name__ == '__main__':
                     # gfg_csv_data = df_marked_U_D_C.to_csv( symbol+'.csv' , index = True )
                     # print( '\nCSV String:\n' , gfg_csv_data )
 
-                if  symbol == "BHEL":
-                    print("Scanning Ony :" + symbol)
+                # if  symbol == "BHEL":
+                    # print("Scanning Ony :" + symbol)
                     # gfg_csv_data = df_marked_U_D_C.to_csv( symbol+'.csv' , index = True )
                 #     print( '\nCSV String:\n' , gfg_csv_data )
 
 
-                """ Calcuate BULL"""
+                # """ Calcuate BULL"""
                 # res = SIB.Find_Long_Side_Trades(df_SMA_Test,4)
                 # if res == "Bull":
                 #     List_Bull_Side.append(str(symbol)  +"_"+ str(res))
@@ -403,6 +422,22 @@ if __name__ == '__main__':
 
             else:
                 print("No Data is Present for Symbol " + symbol)
+
+
+        """ Display Conclusion Result"""
+
+        for cond1 in List_Bull_Side_CROSSED_1_BUT_NOT_2:
+            mess = cond1 + "_Bull" +"_CROSSED_1_BUT_NOT_2"
+            print(mess)
+
+        print( "\n" )
+        print( "\n" )
+        print( "\n" )
+
+        for cond1 in List_Bull_Side_WILL_CROSS_1:
+            mess = cond1 + "_Bull" +"_WILL_CROSS_1"
+            print(mess)
+
 
         print( "Scanning Finsished!" )
 #
