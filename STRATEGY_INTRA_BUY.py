@@ -199,7 +199,7 @@ class STRATEGY_INTRA_BUY :
             print("Failed To calcuate Bull")
             res = "failed"
             return res
-    def Find_Short_Side_Trades( self,df_Input_With_Col_UPDOWN_CHANGE,period=10,Ignore_Period = 50 ):
+    def Find_Short_Side_Trades( self,df_Input_With_Col_UPDOWN_CHANGE,period=10,Allowed_Period_InPercentage = 50 ):
         res = "XX"
         try:
             dt_temp = df_Input_With_Col_UPDOWN_CHANGE[::-1].iloc[0:period]
@@ -209,18 +209,24 @@ class STRATEGY_INTRA_BUY :
             for row in dt_temp.iterrows():
                 trend = row[1]["UP_DOWN"]
                 Curr_Trend= trend
-                if trend == "DOWN":
+                if trend== "DOWN":
                     res = "Bear"
                     count_trend_Bear =  count_trend_Bear +1
                 else:
                     res ="Failed"
-                    count_trend_Bull =  count_trend_Bull +1
-                    # break
+                    count_trend_Bull = count_trend_Bull+1
 
-            return res
+            per = self.Calculate_Percentage(count_trend_Bear,period)
+            if per >= Allowed_Period_InPercentage:
+                return res
+            else :
+                res ="Failed"
+                return res
+
+
 
         except:
-            print("Failed To calculate Bear")
+            print("Failed To calcuate Bull")
             res = "failed"
             return res
     def SMA_alpha_GreaterThan_beta_And_Less_Than_Theta( self,df_SMA_alpha_beta_theta ,min_period =14):
@@ -269,6 +275,55 @@ class STRATEGY_INTRA_BUY :
             pass
         except:
             print("Failed To calculate SMA on alpha, Beta , Theta")
+
+
+    def SMA_SELL_ABT_test( self,df_SMA_alpha_beta_theta ,min_period =14):
+        """
+        alpha = 14 Days SMA
+        beta = 50 Day SMA
+        Theta = 200 Day SMA
+
+        logic : alpha < beta  && alpha < Theta   --> Possibility to break Beta in coming Next
+
+        Conclusion: Will consider Bull
+        """
+        try:
+
+            df_temp= df_SMA_alpha_beta_theta
+            List_Result = [ ]
+
+            counter = 0
+            for row in df_temp.iterrows():
+
+                alpha  =row[1]["SMA_14"]
+                beta = row[1]["SMA_50"]
+                theta = row[1]["SMA_200"]
+
+                if counter >= min_period:
+
+                    if (alpha >=beta  ) and (alpha > theta):
+                        List_Result.append("S_WILL_FALL_1")
+                    elif (alpha > theta  ) and (alpha < beta):
+                        List_Result.append("S_CROSSED_1_NOT_2")
+                    elif (alpha < theta   ) and (alpha < beta):
+                        List_Result.append("S_CROSSED_2")
+                    # elif(alpha >= beta) and (beta < theta):
+                    #     List_Result.append("BETA_WILL_CROSS_2")
+                    else:
+                        List_Result.append(0)
+                else:
+                    List_Result.append( 0 )
+
+                counter = counter +1
+
+            df_temp["ABT_cases_Sell"] = List_Result
+
+            return df_temp
+
+            pass
+        except:
+            print("Failed To calculate SMA on SELL alpha, Beta , Theta")
+
     def  Apply_SMA_on_Period( self,df_SMA_alpha_beta_theta, trend,period = 22,delta_allowed = 50 ):
         try:
             dt_temp = df_SMA_alpha_beta_theta[ : :-1 ].iloc[ 0 :period ][::-1]
@@ -278,6 +333,30 @@ class STRATEGY_INTRA_BUY :
 
             for row in dt_temp.iterrows():
                 _trend = row[1]["ABT_cases" ]
+                if _trend == trend:
+                    count_trend =count_trend+1
+
+
+            """ 40 /60  """
+            res = self.Calculate_Percentage_SMA(count_trend, period)
+            if res >= delta_allowed :
+                return "P" ,dt_temp
+            else :
+                return "F" ,pd.DataFrame()
+
+        except:
+            print("Failed to Apply Trend on Apply_SMA_On_Period()")
+            return pd.DataFrame()
+
+    def  Apply_SMA_on_Period_SELL( self,df_SMA_alpha_beta_theta, trend,period = 22,delta_allowed = 50 ):
+        try:
+            dt_temp = df_SMA_alpha_beta_theta[ : :-1 ].iloc[ 0 :period ][::-1]
+
+            list_Result =[]
+            count_trend =0
+
+            for row in dt_temp.iterrows():
+                _trend = row[1]["ABT_cases_Sell" ]
                 if _trend == trend:
                     count_trend =count_trend+1
 
@@ -317,6 +396,8 @@ if __name__ == '__main__':
         List_Symbol =[]
         List_Bear_Side = []
 
+        List_SELL_Side_WILL_CROSS_1 =[]
+
         List_SMA_BELOW_1=[]
 
         for symbol in d :
@@ -339,7 +420,7 @@ if __name__ == '__main__':
                 df_marked_U_D_C["SMA_200"]=  df_marked_U_D_C[ConfigVariable.BhavCopy_EQ.CLOSE].rolling(200,min_periods=1).mean()
 
 
-                """ CASE 1: ABT testing  """
+                # """ CASE 1: ABT testing  """
                 df_ABT = SIB.SMA_alpha_GreaterThan_beta_And_Less_Than_Theta(df_marked_U_D_C)
 
                 """Calculate Trend  on specific Period """
@@ -364,9 +445,9 @@ if __name__ == '__main__':
                 if res_sma == "P" :
                     # List_SMA_BELOW_1.append(str(symbol) + "_" +res_sma )
                     """Recursive Using Func: Calcuate BULL"""
-                    res = SIB.Find_Long_Side_Trades( df_SMA_Test , 5,70 )
+                    res = SIB.Find_Long_Side_Trades( df_SMA_Test , 10,70 )
                     if res == "Bull" :
-                        List_Bull_Side_CROSSED_1_BUT_NOT_2.append( str( symbol )+"_"+str( res ) )
+                        List_Bull_Side_CROSSED_1_BUT_NOT_2.append( str( symbol )+" _"+str( res ) )
 
 
 
@@ -374,11 +455,22 @@ if __name__ == '__main__':
                 if res_sma1 == "P" :
                     # List_SMA_BELOW_1.append( str( symbol )+"_"+res_sma )
                     """Recursive Using Func: Calcuate BULL"""
-                    res1 = SIB.Find_Long_Side_Trades( df_SMA_Test1 , 5 , 70 )
+                    res1 = SIB.Find_Long_Side_Trades( df_SMA_Test1 , 10 , 70 )
                     if res1 == "Bull" :
-                        List_Bull_Side_WILL_CROSS_1.append( str( symbol )+"_"+str( res1 ) )
+                        List_Bull_Side_WILL_CROSS_1.append( str( symbol )+" _"+str( res1 ) )
 
 
+
+                """ SELL SIDE CONFIGURATION"""
+                df_ABT1s = SIB.SMA_SELL_ABT_test(df_marked_U_D_C)
+
+                res_sma_sell,df_SMA_ABT_SELL =SIB.Apply_SMA_on_Period_SELL(df_marked_U_D_C,"S_CROSSED_1_NOT_2",23,70)
+                if res_sma_sell == "P" :
+                    # List_SMA_BELOW_1.append( str( symbol )+"_"+res_sma )
+                    """Recursive Using Func: Calcuate BEAR"""
+                    res1 = SIB.Find_Short_Side_Trades( df_SMA_ABT_SELL , 10 , 60 )
+                    if res1 == "Bear" :
+                        List_SELL_Side_WILL_CROSS_1.append( str( symbol )+" _"+str( res1 ) )
 
 
 
@@ -437,6 +529,15 @@ if __name__ == '__main__':
         for cond1 in List_Bull_Side_WILL_CROSS_1:
             mess = cond1 + "_Bull" +"_WILL_CROSS_1"
             print(mess)
+
+        print( "\n SELL SIGNAL " )
+        print( "\n" )
+        print( "\n" )
+
+        for cond1 in List_SELL_Side_WILL_CROSS_1:
+            mess = cond1 + "_Bear" +"S_CROSSED_1_NOT_2"
+            print(mess)
+
 
 
         print( "Scanning Finsished!" )
