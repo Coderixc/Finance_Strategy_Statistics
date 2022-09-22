@@ -468,7 +468,7 @@ if __name__ == '__main__':
                 if res_sma_sell == "P" :
                     # List_SMA_BELOW_1.append( str( symbol )+"_"+res_sma )
                     """Recursive Using Func: Calcuate BEAR"""
-                    res1 = SIB.Find_Short_Side_Trades( df_SMA_ABT_SELL , 10 , 60 )
+                    res1 = SIB.Find_Short_Side_Trades( df_SMA_ABT_SELL , 10 , 1 )
                     if res1 == "Bear" :
                         List_SELL_Side_WILL_CROSS_1.append( str( symbol )+" _"+str( res1 ) )
 
