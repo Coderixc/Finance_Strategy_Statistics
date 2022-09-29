@@ -523,15 +523,14 @@ if __name__ == '__main__':
             print(mess)
 
         print( "\n" )
-        print( "\n" )
-        print( "\n" )
+        # print( "\n" )
+        # print( "\n" )
 
         for cond1 in List_Bull_Side_WILL_CROSS_1:
             mess = cond1 + "_Bull" +"_WILL_CROSS_1"
             print(mess)
 
         print( "\n SELL SIGNAL " )
-        print( "\n" )
         print( "\n" )
 
         for cond1 in List_SELL_Side_WILL_CROSS_1:
