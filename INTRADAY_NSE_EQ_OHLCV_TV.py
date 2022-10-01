@@ -59,6 +59,7 @@ class Data_Intraday_EQ:
 
         self.Data_One_Symbsol=pd.read_sql(query,con=self.db_connection)
 
+
     def _main ( self ) :
         if(self.Creating_a_Database()):
             self.PrepareMysql()
