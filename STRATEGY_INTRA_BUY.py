@@ -441,7 +441,7 @@ if __name__ == '__main__':
 
 
                 """Calculate BULL USING SMA CONDITION"""
-                res_sma,df_SMA_Test =SIB.Apply_SMA_on_Period(df_marked_U_D_C,"CROSSED_1_BUT_NOT_2",23,70)
+                res_sma,df_SMA_Test =SIB.Apply_SMA_on_Period(df_marked_U_D_C,"CROSSED_1_BUT_NOT_2",23,90)
                 if res_sma == "P" :
                     # List_SMA_BELOW_1.append(str(symbol) + "_" +res_sma )
                     """Recursive Using Func: Calcuate BULL"""
@@ -451,7 +451,7 @@ if __name__ == '__main__':
 
 
 
-                res_sma1,df_SMA_Test1 =SIB.Apply_SMA_on_Period(df_marked_U_D_C,"WILL_CROSS_1",23,70)
+                res_sma1,df_SMA_Test1 =SIB.Apply_SMA_on_Period(df_marked_U_D_C,"WILL_CROSS_1",23,90)
                 if res_sma1 == "P" :
                     # List_SMA_BELOW_1.append( str( symbol )+"_"+res_sma )
                     """Recursive Using Func: Calcuate BULL"""
@@ -464,11 +464,11 @@ if __name__ == '__main__':
                 """ SELL SIDE CONFIGURATION"""
                 df_ABT1s = SIB.SMA_SELL_ABT_test(df_marked_U_D_C)
 
-                res_sma_sell,df_SMA_ABT_SELL =SIB.Apply_SMA_on_Period_SELL(df_marked_U_D_C,"S_CROSSED_1_NOT_2",23,70)
+                res_sma_sell,df_SMA_ABT_SELL =SIB.Apply_SMA_on_Period_SELL(df_marked_U_D_C,"S_CROSSED_1_NOT_2",23,90)
                 if res_sma_sell == "P" :
                     # List_SMA_BELOW_1.append( str( symbol )+"_"+res_sma )
                     """Recursive Using Func: Calcuate BEAR"""
-                    res1 = SIB.Find_Short_Side_Trades( df_SMA_ABT_SELL , 10 , 1 )
+                    res1 = SIB.Find_Short_Side_Trades( df_SMA_ABT_SELL , 10 , 50 )
                     if res1 == "Bear" :
                         List_SELL_Side_WILL_CROSS_1.append( str( symbol )+" _"+str( res1 ) )
 
