@@ -495,7 +495,7 @@ if __name__ == '__main__':
                     # gfg_csv_data = df_marked_U_D_C.to_csv( symbol+'.csv' , index = True )
                     # print( '\nCSV String:\n' , gfg_csv_data )
 
-                if  symbol == "VIPIND":
+                if  symbol == "TORNTPHARM":
                     print("Scanning Ony :" + symbol)
                     # gfg_csv_data = df_marked_U_D_C.to_csv( symbol+'.csv' , index = True )
                 #     print( '\nCSV String:\n' , gfg_csv_data )
