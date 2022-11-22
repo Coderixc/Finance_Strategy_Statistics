@@ -34,6 +34,7 @@ warnings.simplefilter(action='ignore', category=UserWarning)
 # d= obj.df_INTRADAY_NSE_EQ_OHLC_TV
 # print(d)
 
+
 class STRATEGY_INTRA_BUY :
 
     def __init__(self,df):
