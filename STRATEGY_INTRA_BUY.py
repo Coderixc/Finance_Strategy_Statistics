@@ -19,6 +19,7 @@
 """
 
 
+
 import ConfigVariable
 import INTRADAY_NSE_EQ_OHLCV_TV as OHLCV
 import pandas as pd
@@ -456,7 +457,7 @@ if __name__ == '__main__':
                 if res_sma1 == "P" :
                     # List_SMA_BELOW_1.append( str( symbol )+"_"+res_sma )
                     """Recursive Using Func: Calcuate BULL"""
-                    res1 = SIB.Find_Long_Side_Trades( df_SMA_Test1 , 10 , 70 )
+                    res1 = SIB.Find_Long_Side_Trades( df_SMA_Test1 , 20 , 80 )
                     if res1 == "Bull" :
                         List_Bull_Side_WILL_CROSS_1.append( str( symbol )+" _"+str( res1 ) )
 
