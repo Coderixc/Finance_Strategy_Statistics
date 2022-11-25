@@ -7,4 +7,5 @@ import matplotlib.pyplot as plt
 class Scanner_RSI:
 
     def __init__( self,df ):
+
         pass
