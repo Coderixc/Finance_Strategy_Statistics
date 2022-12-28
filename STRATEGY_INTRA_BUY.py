@@ -399,7 +399,6 @@ if __name__ == '__main__':
         List_Bear_Side = []
 
         List_SELL_Side_WILL_CROSS_1 =[]
-
         List_SMA_BELOW_1=[]
 
         for symbol in d :
